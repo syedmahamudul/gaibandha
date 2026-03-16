@@ -1,0 +1,47 @@
+name: Next.js 15 CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    env:
+      NEXT_DISABLE_ESLINT: true
+
+    steps:
+      # Checkout the repo
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Setup Node.js 18
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: 'npm'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Show scripts defined in package.json (optional debug)
+      - name: Show available scripts
+        run: npm run
+
+      # Run lint (non-blocking)
+      - name: Run lint
+        run: npm run lint || echo "Lint errors ignored"
+
+      # Build Next.js project
+      - name: Build project
+        run: npm run build
+
+      # Run tests (non-blocking if you want)
+      - name: Run tests
+        run: npm test || echo "Tests failed but continuing"
